@@ -1,11 +1,10 @@
 import java.util.ArrayList;
 
+//Version 1.0
 public class PigLatinConverter {
 	
 	//Array of Digraphs and Trigraphs
-	private static final String[] DIGRAPH = {"bl", "br", "ch", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "qu", "sc", "sh", "sk", "sl", "sm", "sn", "sp", "st", "sw", "th", "tr", "tw", "wh", "wr",};
-	private static final String[] TRIGRAPH = {"sch", "scr", "shr", "sph", "spl", "spr", "squ", "str", "thr"};
-	
+	private static final String[] VOWELS = {"a", "e", "i", "o", "u", "y"};
 	
 	//primary function for conversion
 	public String convert(String s) {
@@ -29,8 +28,15 @@ public class PigLatinConverter {
 			
 			//Retrieve the shifting character, digraph, or trigraph in the string if string is greater than or equal to three characters
 			String shift;
-			if(st[i].length() >= 3) {
-				shift = this.getDigraphOrTrigraph(st[i]);
+			if(!isVowel(st[i], 0, false)) {
+				//shift = this.getDigraphOrTrigraph(st[i]);
+				shift = st[i].substring(0, 1);
+				int letter = 1;
+				while (!isVowel(st[i], letter, true)){
+					shift = shift + Character.toString(st[i].charAt(letter));
+					letter++;
+				}
+				
 			}
 			else shift = st[i].substring(0,1);
 			
@@ -39,8 +45,16 @@ public class PigLatinConverter {
 			else if(shift.length() == 2) type = 1;
 			else type = 0;
 			
+			//Test to see if the shift is a vowel
+			boolean isVowel = false;
+			for(int j = 0; j < VOWELS.length - 1/*to not include y in this case*/; j++) {
+				if (shift.equalsIgnoreCase(VOWELS[j])) {
+					isVowel = true;
+				}
+			}
+			
 			//Vowel Start Conversion
-			if(shift.equalsIgnoreCase("a") || shift.equalsIgnoreCase("e") || shift.equalsIgnoreCase("i") || shift.equalsIgnoreCase("o") || shift.equalsIgnoreCase("u")) {
+			if(isVowel) {
 				st[i] = st[i] + "way";
 			}
 			//Consonant Start Conversion
@@ -74,28 +88,19 @@ public class PigLatinConverter {
 		return pigLatin;
 	}
 	
-	//Method that tests to see if a digraph stars the given String. If Digraph exists, return digraph. Otherwise, return first character
-	//String parameter MUST be greater than two characters
-	private String getDigraphOrTrigraph(String s) {
-		
-		//Test Trigraph, return Trigraph
-		String firstThree = s.substring(0, 3);
-		for (int i = 0; i < TRIGRAPH.length; i++) {
-			if (firstThree.equalsIgnoreCase(TRIGRAPH[i])) {
-				return firstThree;
+	//Method that returns true if the given index in the given String is a vowel. The third parameter will say whether or not to include y
+	private boolean isVowel(String s, int index, boolean y) {
+		boolean isVowel = false;
+		System.out.println("s = " + s + "; index = " + index + "; y = " + y);
+		String letter = Character.toString(s.charAt(index));
+		int size = VOWELS.length-1;
+		if(y) size = VOWELS.length;
+		for(int i = 0; i < size; i++) {
+			if (letter.equalsIgnoreCase(VOWELS[i])) {
+				isVowel = true;
 			}
 		}
-		
-		//Test Digraph, return Digraph
-		String firstTwo = s.substring(0, 2);
-		for(int i = 0; i < DIGRAPH.length; i++) {
-			if (firstTwo.equalsIgnoreCase(DIGRAPH[i])) {
-				return firstTwo;
-			}
-		}
-		
-		//Otherwise return First letter
-		return s.substring(0, 1);
+		return isVowel;
 	}
 	
 }

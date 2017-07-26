@@ -18,3 +18,4 @@ Basically, the Pig Latin system used here works as follows:
  - Hyphenated words are treated as two words  
  - Words may consist of alphabetic characters only (A-Z and a-z)  
  - All punctuation, numerals, symbols and whitespace are not modified
+ - If a word does not contain a vowel, do nothing

@@ -10,9 +10,7 @@ public class PigLatinConverter {
 	public String convert(String s) {
 		
 		//Split sentence into array of strings
-		String st[] = s.split(" ");
-		//Variable to keep track whether or not a Digraph or Trigraph was used: 1 for digraph, 2 for trigraph, 0 for neither
-		int type;
+		String st[] = s.split(" |-");
 		
 		//For each word, convert it to Pig Latin
 		for (int i = 0; i < st.length; i++) {
@@ -26,46 +24,49 @@ public class PigLatinConverter {
 				st[i] = sb.toString();
 			};
 			
-			//Retrieve the shifting character, digraph, or trigraph in the string if string is greater than or equal to three characters
-			String shift;
-			if(!isVowel(st[i], 0, false)) {
-				//shift = this.getDigraphOrTrigraph(st[i]);
-				shift = st[i].substring(0, 1);
-				int letter = 1;
-				while (!isVowel(st[i], letter, true)){
-					shift = shift + Character.toString(st[i].charAt(letter));
-					letter++;
+			//Only convert if the word contains a vowel 
+			if (this.containsVowel(st[i])) {
+				//Find the first instance of a vowel and move set that equal to shift
+				String shift;
+				if(!isVowel(st[i], 0, false)) { //if the first letter is not a vowel...
+					//handle "qu" first
+					if (st[i].substring(0, 2).equalsIgnoreCase("qu")) {
+						shift = st[i].substring(0, 2);
+					}
+					else {
+						shift = st[i].substring(0, 1);
+						int letter = 1;
+						while (!isVowel(st[i], letter, true)){
+							shift = shift + Character.toString(st[i].charAt(letter));
+							letter++;
+						}
+					}
+					
+				}
+				else shift = st[i].substring(0,1);
+				
+				//Test to see if the shift is a vowel
+				boolean isVowel = false;
+				for(int j = 0; j < VOWELS.length - 1/*to not include y in this case*/; j++) {
+					if (shift.equalsIgnoreCase(VOWELS[j])) {
+						isVowel = true;
+					}
 				}
 				
-			}
-			else shift = st[i].substring(0,1);
-			
-			//label type as 0, 1, or 2
-			if(shift.length() == 3) type = 2;
-			else if(shift.length() == 2) type = 1;
-			else type = 0;
-			
-			//Test to see if the shift is a vowel
-			boolean isVowel = false;
-			for(int j = 0; j < VOWELS.length - 1/*to not include y in this case*/; j++) {
-				if (shift.equalsIgnoreCase(VOWELS[j])) {
-					isVowel = true;
+				//Vowel Start Conversion
+				if(isVowel) {
+					st[i] = st[i] + "way";
 				}
-			}
-			
-			//Vowel Start Conversion
-			if(isVowel) {
-				st[i] = st[i] + "way";
-			}
-			//Consonant Start Conversion
-			else {
-				StringBuilder sb = new StringBuilder(st[i]);
-				sb.delete(0, type+1);
-				if (Character.isUpperCase(st[i].charAt(0))) {
-					sb.setCharAt(0, sb.toString().toUpperCase().charAt(0));
+				//Consonant Start Conversion
+				else {
+					StringBuilder sb = new StringBuilder(st[i]);
+					sb.delete(0, shift.length());
+					if (Character.isUpperCase(st[i].charAt(0))) {
+						sb.setCharAt(0, sb.toString().toUpperCase().charAt(0));
+					}
+					st[i] = sb.toString();
+					st[i] = st[i] + shift.toLowerCase() + "ay";
 				}
-				st[i] = sb.toString();
-				st[i] = st[i] + shift.toLowerCase() + "ay";
 			}
 			
 			//Put punctuation back into the word
@@ -91,7 +92,7 @@ public class PigLatinConverter {
 	//Method that returns true if the given index in the given String is a vowel. The third parameter will say whether or not to include y
 	private boolean isVowel(String s, int index, boolean y) {
 		boolean isVowel = false;
-		System.out.println("s = " + s + "; index = " + index + "; y = " + y);
+		//System.out.println("s = " + s + "; index = " + index + "; y = " + y);
 		String letter = Character.toString(s.charAt(index));
 		int size = VOWELS.length-1;
 		if(y) size = VOWELS.length;
@@ -101,6 +102,25 @@ public class PigLatinConverter {
 			}
 		}
 		return isVowel;
+	}
+	
+	//Method that returns true if the given string contains a vowel, a "y" is only treated as a consonant when it is the first letter of the string
+	public boolean containsVowel(String s) {
+		if (Character.toString(s.charAt(0)).equalsIgnoreCase("y")) {
+			for (int i = 1; i < s.length(); i++) {
+				if (isVowel(s, i, true)) {
+					return true;
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < s.length(); i++) {
+				if (isVowel(s, i, true)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 }

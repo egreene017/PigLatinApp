@@ -116,7 +116,7 @@ public class PigLatinConverter {
 			word = true;
 			current = "" + s.charAt(0);
 		}
-		for (int i = 0; i < s.length(); i++) {
+		for (int i = 1; i < s.length(); i++) {
 			//If current position is a letter...
 			if(Character.isLetter(s.charAt(i))) {
 				if(word) current = current+s.charAt(i);

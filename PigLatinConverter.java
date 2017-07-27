@@ -103,7 +103,7 @@ public class PigLatinConverter {
 	}
 	
 	//Method that splits words and symbols into two separate arrays
-	public String[][] split(String s){
+	private String[][] split(String s){
 		//Separate into two lists first;
 		ArrayList<String> words = new ArrayList<String>();
 		ArrayList<String> symbols = new ArrayList<String>();
